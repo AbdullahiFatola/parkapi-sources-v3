@@ -1,0 +1,70 @@
+# Universal Mapping Template
+# Inspired by docs/mapping/*.md structure: source metadata + static/realtime field mapping tables.
+
+source_uid: sample_city_parking
+source_name: Sample City Parking
+source_format: json # json|geojson|csv|xml|excel
+input_kind: static # static|realtime
+has_realtime_data: true
+
+pull:
+  url: https://api.example.com/parking
+  method: GET
+  timeout_seconds: 30
+  auth:
+    type: header_token # none|header_token|query_token|basic
+    headers:
+      Authorization: Bearer ${API_TOKEN}
+    query_params: {}
+
+# Static/Realtime mapping rules to ParkAPI attributes
+mapping_rules:
+  # Required identifiers
+  - target_field: uid
+    source_field: id
+    required: true
+  - target_field: name
+    source_field: name
+    required: true
+
+  # Static defaults
+  - target_field: type
+    default: CAR_PARK
+    required: true
+
+  # Geo mapping
+  - target_field: lat
+    source_field: latitude
+    required: true
+  - target_field: lon
+    source_field: longitude
+    required: true
+
+  # Capacity mapping
+  - target_field: capacity
+    source_field: capacity_total
+    required: true
+  - target_field: realtime_free_capacity
+    source_field: capacity_free
+    required: false
+
+# Exception rules:
+# - merge_from: merge at most 2 source attributes into one ParkAPI field
+# - exclude: remove mapped attribute from transformed output
+exceptions:
+  - target_field: address
+    merge_from: [street, city]
+    separator: ", "
+  - target_field: fee_description
+    exclude: true
+
+# Optional sample payload for local/offline tests
+sample_payload:
+  - id: park-001
+    name: Central Garage
+    latitude: 48.100
+    longitude: 8.100
+    capacity_total: 300
+    capacity_free: 42
+    street: Main Street 1
+    city: Sampletown
