@@ -11,7 +11,7 @@ from parkapi_sources.converters.base_converter.pull import ParkingSitePullConver
 from parkapi_sources.exceptions import ImportParkingSiteException
 from parkapi_sources.models import GeojsonInput, RealtimeParkingSiteInput, SourceInfo, StaticParkingSiteInput
 
-from .models import RadvisFeatureInput, StatusType
+from .models import RadvisFeatureInput
 
 
 class RadvisBwPullConverter(ParkingSitePullConverter):
@@ -49,7 +49,9 @@ class RadvisBwPullConverter(ParkingSitePullConverter):
                 if radvis_parking_site_input.properties.quell_system in sources_to_ignore:
                     continue
 
-                if radvis_parking_site_input.properties.status == StatusType.GEPLANT:
+                # Skip planned and decommissioned installations; import active ones
+                # and installations with unknown status (KEINE ANGABEN).
+                if not radvis_parking_site_input.properties.status.is_importable():
                     continue
 
                 static_parking_site_inputs += radvis_parking_site_input.to_static_parking_site_inputs_with_proj(
