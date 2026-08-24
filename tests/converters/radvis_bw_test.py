@@ -10,7 +10,13 @@ import pytest
 from requests_mock import Mocker
 
 from parkapi_sources.converters import RadvisBwPullConverter
-from parkapi_sources.models import ParkingAudience, ParkingSiteType, PurposeType, SupervisionType
+from parkapi_sources.models import (
+    ParkAndRideType,
+    ParkingAudience,
+    ParkingSiteType,
+    PurposeType,
+    SupervisionType,
+)
 from parkapi_sources.util import RequestHelper
 from tests.converters.helper import validate_static_parking_site_inputs
 
@@ -74,6 +80,7 @@ class RadvisBwConverterTest:
         assert rathaus.has_fee is None
         assert rathaus.supervision_type == SupervisionType.NO
         assert rathaus.related_location == 'Straßenraum'
+        assert rathaus.park_and_ride_type == []
         assert rathaus.restrictions == []
 
         # SCHLIESSFACH -> LOCKBOX + purpose ITEM; restrictions from charging/cargo counts
@@ -85,6 +92,7 @@ class RadvisBwConverterTest:
         assert bike_station.fee_description == '2 EUR/Tag'
         assert bike_station.supervision_type == SupervisionType.VIDEO
         assert bike_station.related_location == 'Bike and Ride'
+        assert bike_station.park_and_ride_type == [ParkAndRideType.YES]
         assert bike_station.public_url == 'https://booking.example.com/bike-station-karlsruhe'
         assert bike_station.photo_url == 'https://example.com/bike-station-karlsruhe.jpg'
         assert sorted(

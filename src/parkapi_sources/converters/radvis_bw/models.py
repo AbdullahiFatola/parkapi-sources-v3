@@ -21,7 +21,13 @@ from validataclass.validators import (
 )
 
 from parkapi_sources.models import GeojsonBaseFeatureInput, ParkingSiteRestrictionInput, StaticParkingSiteInput
-from parkapi_sources.models.enums import ParkingAudience, ParkingSiteType, PurposeType, SupervisionType
+from parkapi_sources.models.enums import (
+    ParkAndRideType,
+    ParkingAudience,
+    ParkingSiteType,
+    PurposeType,
+    SupervisionType,
+)
 from parkapi_sources.util import round_7d
 from parkapi_sources.validators import EmptystringNoneable, ReplacingStringValidator
 
@@ -197,6 +203,11 @@ class RadvisFeaturePropertiesInput:
         # purpose is BIKE, except for SCHLIESSFACH (lockers) which is mapped to ITEM
         purpose = PurposeType.ITEM if self.stellplatzart == RadvisParkingSiteType.SCHLIESSFACH else PurposeType.BIKE
 
+        # BIKE_AND_RIDE installations (typically at stations) are park-and-ride sites
+        park_and_ride_type = (
+            [ParkAndRideType.YES] if self.abstellanlagen_ort == LocationType.BIKE_AND_RIDE else []
+        )
+
         return [
             {
                 'uid': str(self.id),
@@ -209,6 +220,7 @@ class RadvisFeaturePropertiesInput:
                 'has_realtime_data': False,
                 'is_covered': self.ueberdacht,
                 'related_location': self.abstellanlagen_ort.to_related_location(),
+                'park_and_ride_type': park_and_ride_type,
                 'supervision_type': self.ueberwacht.to_supervision_type(),
                 'static_data_updated_at': self.zuletzt_bearbeitet_am,
                 'photo_url': self.photo_url,

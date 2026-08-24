@@ -32,7 +32,7 @@ Attributes which are set statically by the converter:
 | anzahl_lademoeglichkeiten      | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CHARGING` restriction if > 0                                         |
 | kapazitaet_lastenraeder        | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CARGOBIKE` restriction if > 0                                        |
 | ueberwacht                     | [Ueberwachung](#Ueberwachung)    | 1           | supervision_type                                  | See [Ueberwachung](#Ueberwachung)                                            |
-| abstellanlagen_ort             | [AbstellanlagenOrt](#AbstellanlagenOrt) | 1      | related_location                                  | See [AbstellanlagenOrt](#AbstellanlagenOrt)                                  |
+| abstellanlagen_ort             | [AbstellanlagenOrt](#AbstellanlagenOrt) | 1      | related_location, park_and_ride_type             | See [AbstellanlagenOrt](#AbstellanlagenOrt); `BIKE_AND_RIDE` additionally sets `park_and_ride_type = [YES]` |
 | groessenklasse                 | string                            | ?           | —                                                 | Size class (e.g. `BASISANGEBOT_XS`), ignored                                 |
 | stellplatzart                  | [Stellplatzart](#Stellplatzart)  | 1           | type, purpose                                     | See [Stellplatzart](#Stellplatzart); `SCHLIESSFACH` maps to `purpose.ITEM` |
 | ueberdacht                     | boolean                           | 1           | is_covered                                        |                                                                              |
@@ -46,6 +46,7 @@ Attributes which are set statically by the converter:
 | url                            | string                            | ?           | public_url                                        | Booking/info URL from the source system (e.g. online booking)               |
 | status                         | [Status](#Status)                | 1           | —                                                 | `AKTIV` and `KEINE ANGABEN` are imported, `GEPLANT` and `AUSSER BETRIEB` skipped |
 | zuletzt_bearbeitet_am          | datetime                          | 1           | static_data_updated_at                            | ISO 8601 timestamp in UTC (e.g. `2026-07-22T01:02:36Z`)                      |
+| park_and_ride_type (derived)   | array                             | ?           | park_and_ride_type                                | `[YES]` if `abstellanlagen_ort` is `BIKE_AND_RIDE`, otherwise unset (519 of 4314 sites in the current feed) |
 
 
 ## Stellplatzart
@@ -132,3 +133,13 @@ Restrictions are only added when the corresponding count is greater than `0`. Th
 * both set: `"{beschreibung} {weitere_information}"`
 * only one set: that value
 * neither set: `description` stays unset
+
+
+## Notes on the current feed (4314-feature sample, 2026-08-24)
+
+* `quell_system`: `MOBIDATABW` 3413 / `RADVIS` 901. With the `MOBIDATABW` skip and the status filter, **895 sites** are imported.
+* `url` is **not present** in the live feed (only `photo_url` is) — `public_url` stays unset for all real features.
+* `kapazitaet_lastenraeder` is always `null` in the current feed — the `CARGOBIKE` restriction is schema support only and never fires today.
+* `externe_id` (3907 sites) is not mappable: `external_identifiers` only supports the types `OSM` and `DHID`, and RadVIS ids are municipal identifiers.
+* `zustaendig` / `zustaendig_orga_typ` (537 sites) are not mappable: ParkAPI has no "responsible body" field, and `operator_name` is already covered by `betreiber`.
+* `groessenklasse` (4 sites) is not mappable; only `tags` (free-form) could carry it, which is not worth it for 4 sites.
