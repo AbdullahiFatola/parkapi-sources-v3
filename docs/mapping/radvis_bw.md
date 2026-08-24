@@ -4,7 +4,7 @@ The state of Baden-Württemberg publishes a GeoJSON dataset with locations of bi
 
 The geometry coordinates are in a projected CRS (UTM zone 32N, WGS84 ellipsoid, EPSG:25832). The converter reprojects them to WGS84 lat/lon using `pyproj` before creating the `ParkingSite`.
 
-Parking installations with `"status": "GEPLANT"` (planned, not yet built) or `"status": "AUSSER BETRIEB"` (decommissioned) should not be integrated. Sources configured in `PARK_API_RADVIS_IGNORE_SOURCES` are skipped as well (RadVIS contains duplicated data from other systems).
+Parking installations with `"status": "GEPLANT"` (planned, not yet built) or `"status": "AUSSER BETRIEB"` (decommissioned) should not be integrated. Parking sites with `"quell_system": "MOBIDATABW"` (source system) should not be integrated either — RadVIS contains duplicated data from the MobiDataBW data exchange, which is already covered by the MobiDataBW import. Sources configured in `PARK_API_RADVIS_IGNORE_SOURCES` are skipped as well (RadVIS contains duplicated data from other systems).
 
 
 ## `ParkingSite` Properties
@@ -16,7 +16,7 @@ Each bicycle parking installation is mapped to a static `ParkingSite` as follows
 Attributes which are set statically by the converter:
 
 * `has_realtime_data` is always set to `false`
-* `purpose` is always set to `BIKE`
+* `purpose` is always set to `BIKE`, except for `stellplatzart` `SCHLIESSFACH` which is mapped to `ITEM` (see [Stellplatzart](#Stellplatzart))
 * `lat` and `lon` are computed from the GeoJSON point geometry, reprojected from UTM zone 32N (EPSG:25832) to WGS84
 * `uid` is derived from the numeric feature id
 
@@ -26,7 +26,7 @@ Attributes which are set statically by the converter:
 | name                           | string                            | ?           | name                                              | Fallback `Abstellanlage` if blank                                            |
 | betreiber                      | string                            | ?           | operator_name                                     | Omit if blank                                                                |
 | externe_id                     | string                            | ?           | —                                                 | External id from the source system, not mapped                               |
-| quell_system                   | string                            | 1           | —                                                 | Used for `PARK_API_RADVIS_IGNORE_SOURCES` filtering                          |
+| quell_system                   | string                            | 1           | —                                                 | `MOBIDATABW` and sources in `PARK_API_RADVIS_IGNORE_SOURCES` are skipped (duplicates of other imports) |
 | zustaendig                     | string                            | ?           | —                                                 | Responsible body, not mapped (empty string treated as unset)                 |
 | zustaendig_orga_typ            | [OrganizationType](#OrganizationType) | ?        | —                                                 | Not mapped (empty string treated as unset)                                   || kapazitaet                     | integer                           | 1           | capacity                                          |                                                                              |
 | anzahl_lademoeglichkeiten      | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CHARGING` restriction if > 0                                         |
@@ -34,11 +34,11 @@ Attributes which are set statically by the converter:
 | ueberwacht                     | [Ueberwachung](#Ueberwachung)    | 1           | supervision_type                                  | See [Ueberwachung](#Ueberwachung)                                            |
 | abstellanlagen_ort             | [AbstellanlagenOrt](#AbstellanlagenOrt) | 1      | related_location                                  | See [AbstellanlagenOrt](#AbstellanlagenOrt)                                  |
 | groessenklasse                 | string                            | ?           | —                                                 | Size class (e.g. `BASISANGEBOT_XS`), ignored                                 |
-| stellplatzart                  | [Stellplatzart](#Stellplatzart)  | 1           | type                                              | See [Stellplatzart](#Stellplatzart)                                          |
+| stellplatzart                  | [Stellplatzart](#Stellplatzart)  | 1           | type, purpose                                     | See [Stellplatzart](#Stellplatzart); `SCHLIESSFACH` maps to `purpose.ITEM` |
 | ueberdacht                     | boolean                           | 1           | is_covered                                        |                                                                              |
-| gebuehren_pro_tag              | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if any fee is > 0 or a fee description is present  |
-| gebuehren_pro_monat            | integer                           | ?           | has_fee                                           | See above                                                                    |
-| gebuehren_pro_jahr             | integer                           | ?           | has_fee                                           | See above                                                                    |
+| gebuehren_pro_tag              | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
+| gebuehren_pro_monat            | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
+| gebuehren_pro_jahr             | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
 | beschreibung_gebuehren         | string                            | ?           | fee_description                                   |                                                                              |
 | beschreibung                   | string                            | ?           | description                                       | Combined with `weitere_information` (see below)                              |
 | weitere_information            | string                            | ?           | description                                       | Appended to `beschreibung`, separated by a space                             |
@@ -67,6 +67,8 @@ Attributes which are set statically by the converter:
 | SONSTIGE                                  | `OTHER`              |
 
 Note: the real feed uses underscore-separated enum strings (e.g. `VORDERRADANSCHLUSS_SICHERUNGSBUEGEL`, `KEINE_ANGABEN`, `AUTOMATISCHES_PARKSYSTEM`); both spellings are accepted.
+
+`SCHLIESSFACH` additionally maps to `purpose.ITEM`; all other types map to `purpose.BIKE`.
 
 
 ## Ueberwachung

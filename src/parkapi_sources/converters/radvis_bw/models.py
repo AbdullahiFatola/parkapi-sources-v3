@@ -172,10 +172,9 @@ class RadvisFeaturePropertiesInput:
 
         has_fee: Optional[bool] = None
         if (
-            self.gebuehren_pro_tag
-            or self.gebuehren_pro_monat
-            or self.gebuehren_pro_jahr
-            or self.beschreibung_gebuehren is not None
+            self.gebuehren_pro_tag is not None
+            or self.gebuehren_pro_monat is not None
+            or self.gebuehren_pro_jahr is not None
         ):
             has_fee = True
 
@@ -195,13 +194,16 @@ class RadvisFeaturePropertiesInput:
                 ),
             )
 
+        # purpose is BIKE, except for SCHLIESSFACH (lockers) which is mapped to ITEM
+        purpose = PurposeType.ITEM if self.stellplatzart == RadvisParkingSiteType.SCHLIESSFACH else PurposeType.BIKE
+
         return [
             {
                 'uid': str(self.id),
                 'name': self.name or 'Abstellanlage',
                 'type': self.stellplatzart.to_parking_site_type(),
                 'capacity': self.kapazitaet,
-                'purpose': PurposeType.BIKE,
+                'purpose': purpose,
                 'operator_name': self.betreiber,
                 'description': description,
                 'has_realtime_data': False,

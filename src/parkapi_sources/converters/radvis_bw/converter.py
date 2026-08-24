@@ -37,15 +37,19 @@ class RadvisBwPullConverter(ParkingSitePullConverter):
         static_parking_site_errors: list[ImportParkingSiteException] = []
 
         parking_site_features = self.geojson_validator.validate(self.get_data())
-        sources_to_ignore: list[str] = []
+
+        # RadVIS contains duplicated data from other systems: entries that originated from the
+        # MobiDataBW data exchange (quell_system == 'MOBIDATABW') must not be integrated, as they
+        # are already covered by the MobiDataBW import. Additional sources can be configured via
+        # PARK_API_RADVIS_IGNORE_SOURCES.
+        sources_to_ignore: set[str] = {'MOBIDATABW'}
         if self.config_helper.get('PARK_API_RADVIS_IGNORE_SOURCES'):
-            sources_to_ignore = self.config_helper.get('PARK_API_RADVIS_IGNORE_SOURCES')
+            sources_to_ignore.update(self.config_helper.get('PARK_API_RADVIS_IGNORE_SOURCES'))
 
         for feature_dict in parking_site_features.features:
             try:
                 radvis_parking_site_input = self.radvis_parking_site_validator.validate(feature_dict)
 
-                # Ignore sources by config, because Radvis has a lot of duplicate data if you import data from other sources, too.
                 if radvis_parking_site_input.properties.quell_system in sources_to_ignore:
                     continue
 

@@ -310,6 +310,201 @@
         "status": "AUSSER_BETRIEB",
         "zuletzt_bearbeitet_am": "2026-08-18T10:49:51.594Z"
       }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.200000001",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          494100.0,
+          5380100.0
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 200000001,
+        "name": "Rathaus Freiburg",
+        "betreiber": "Stadt Freiburg",
+        "externe_id": "9001",
+        "quell_system": "RADVIS",
+        "zustaendig": "Stadt Freiburg",
+        "zustaendig_orga_typ": "GEMEINDE",
+        "kapazitaet": 12,
+        "anzahl_lademoeglichkeiten": 0,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "KEINE",
+        "abstellanlagen_ort": "STRASSENRAUM",
+        "groessenklasse": null,
+        "stellplatzart": "ANLEHNBUEGEL",
+        "ueberdacht": false,
+        "gebuehren_pro_tag": null,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": "Fahrradständer am Rathaus",
+        "weitere_information": "24h geöffnet",
+        "photo_url": null,
+        "url": null,
+        "status": "AKTIV",
+        "zuletzt_bearbeitet_am": "2026-07-22T01:02:36Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.200000002",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          494200.0,
+          5380200.0
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 200000002,
+        "name": "Bike Station Karlsruhe",
+        "betreiber": "Stadt Karlsruhe",
+        "externe_id": "9002",
+        "quell_system": "RADVIS",
+        "zustaendig": "Stadt Karlsruhe",
+        "zustaendig_orga_typ": "KREIS",
+        "kapazitaet": 10,
+        "anzahl_lademoeglichkeiten": 4,
+        "kapazitaet_lastenraeder": 2,
+        "ueberwacht": "VIDEO",
+        "abstellanlagen_ort": "BIKE_AND_RIDE",
+        "groessenklasse": null,
+        "stellplatzart": "SCHLIESSFACH",
+        "ueberdacht": true,
+        "gebuehren_pro_tag": 2,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": "2 EUR/Tag",
+        "beschreibung": null,
+        "weitere_information": null,
+        "photo_url": "https://example.com/bike-station-karlsruhe.jpg",
+        "url": "https://booking.example.com/bike-station-karlsruhe",
+        "status": "AKTIV",
+        "zuletzt_bearbeitet_am": "2026-08-01T10:30:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.200000003",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          494300.0,
+          5380300.0
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 200000003,
+        "name": "",
+        "betreiber": "",
+        "externe_id": "9003",
+        "quell_system": "RADVIS",
+        "zustaendig": "",
+        "zustaendig_orga_typ": "",
+        "kapazitaet": 6,
+        "anzahl_lademoeglichkeiten": null,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "UNBEKANNT",
+        "abstellanlagen_ort": "SONSTIGES",
+        "groessenklasse": null,
+        "stellplatzart": "VORDERRADANSCHLUSS_SICHERUNGSBUEGEL",
+        "ueberdacht": false,
+        "gebuehren_pro_tag": 0,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": "Kostenlos",
+        "weitere_information": null,
+        "photo_url": null,
+        "url": null,
+        "status": "KEINE ANGABEN",
+        "zuletzt_bearbeitet_am": "2026-06-17T14:11:46Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.200000004",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          494400.0,
+          5380400.0
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 200000004,
+        "name": "Sammelanlage Bahnhof",
+        "betreiber": "Stadt Ulm",
+        "externe_id": "9004",
+        "quell_system": "RADVIS",
+        "zustaendig": "Stadt Ulm",
+        "zustaendig_orga_typ": "GEMEINDE",
+        "kapazitaet": 30,
+        "anzahl_lademoeglichkeiten": 0,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "VOR-ORT-PERSONAL",
+        "abstellanlagen_ort": "OEFFENTLICHE_EINRICHTUNG",
+        "groessenklasse": null,
+        "stellplatzart": "SAMMELANLAGE",
+        "ueberdacht": true,
+        "gebuehren_pro_monat": 5,
+        "gebuehren_pro_jahr": null,
+        "gebuehren_pro_tag": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": null,
+        "weitere_information": "Bewachte Anlage",
+        "photo_url": null,
+        "url": null,
+        "status": "AKTIV",
+        "zuletzt_bearbeitet_am": "2026-07-01T08:00:00Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.200000005",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          494500.0,
+          5380500.0
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 200000005,
+        "name": "Fahrradparkhaus Bahnhof Ost",
+        "betreiber": "Stadt Stuttgart",
+        "externe_id": "9005",
+        "quell_system": "RADVIS",
+        "zustaendig": "Stadt Stuttgart",
+        "zustaendig_orga_typ": "GEMEINDE",
+        "kapazitaet": 100,
+        "anzahl_lademoeglichkeiten": 0,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "KEINE",
+        "abstellanlagen_ort": "BILDUNGSEINRICHTUNG",
+        "groessenklasse": null,
+        "stellplatzart": "FAHRRADPARKHAUS",
+        "ueberdacht": true,
+        "gebuehren_pro_tag": null,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": null,
+        "weitere_information": null,
+        "photo_url": null,
+        "url": null,
+        "status": "AKTIV",
+        "zuletzt_bearbeitet_am": "2026-07-22T01:02:36Z"
+      }
     }
   ]
 }
