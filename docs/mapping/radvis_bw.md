@@ -28,8 +28,7 @@ Attributes which are set statically by the converter:
 | externe_id                     | string                            | ?           | —                                                 | External id from the source system, not mapped                               |
 | quell_system                   | string                            | 1           | —                                                 | Used for `PARK_API_RADVIS_IGNORE_SOURCES` filtering                          |
 | zustaendig                     | string                            | ?           | —                                                 | Responsible body, not mapped (empty string treated as unset)                 |
-| zustaendig_orga_typ            | [OrganizationType](#OrganizationType) | ?        | —                                                 | Not mapped (empty string treated as unset)                                   |
-| kapazitaet                     | integer                           | 1           | capacity                                          |                                                                              |
+| zustaendig_orga_typ            | [OrganizationType](#OrganizationType) | ?        | —                                                 | Not mapped (empty string treated as unset)                                   || kapazitaet                     | integer                           | 1           | capacity                                          |                                                                              |
 | anzahl_lademoeglichkeiten      | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CHARGING` restriction if > 0                                         |
 | kapazitaet_lastenraeder        | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CARGOBIKE` restriction if > 0                                        |
 | ueberwacht                     | [Ueberwachung](#Ueberwachung)    | 1           | supervision_type                                  | See [Ueberwachung](#Ueberwachung)                                            |
@@ -37,7 +36,7 @@ Attributes which are set statically by the converter:
 | groessenklasse                 | string                            | ?           | —                                                 | Size class (e.g. `BASISANGEBOT_XS`), ignored                                 |
 | stellplatzart                  | [Stellplatzart](#Stellplatzart)  | 1           | type                                              | See [Stellplatzart](#Stellplatzart)                                          |
 | ueberdacht                     | boolean                           | 1           | is_covered                                        |                                                                              |
-| gebuehren_pro_tag              | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if any fee field is present                          |
+| gebuehren_pro_tag              | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if any fee is > 0 or a fee description is present  |
 | gebuehren_pro_monat            | integer                           | ?           | has_fee                                           | See above                                                                    |
 | gebuehren_pro_jahr             | integer                           | ?           | has_fee                                           | See above                                                                    |
 | beschreibung_gebuehren         | string                            | ?           | fee_description                                   |                                                                              |
@@ -56,6 +55,7 @@ Attributes which are set statically by the converter:
 | ANLEHNBUEGEL                              | `STANDS`             |
 | FAHRRADBOX                                | `LOCKERS`            |
 | VORDERRADANSCHLUSS                        | `WALL_LOOPS`         |
+| VORDERRADANSCHLUSS_SICHERUNGSBUEGEL       | `SAFE_WALL_LOOPS`    |
 | VORDERRADANSCHLUSS MIT SICHERHEITSBUEGEL  | `SAFE_WALL_LOOPS`    |
 | DOPPELSTOECKIG                            | `TWO_TIER`           |
 | FAHRRADPARKHAUS                           | `BUILDING`           |
@@ -65,6 +65,8 @@ Attributes which are set statically by the converter:
 | AUTOMATISCHES PARKSYSTEM                  | `OTHER`              |
 | ABSTELLFLAECHE                            | `OTHER`              |
 | SONSTIGE                                  | `OTHER`              |
+
+Note: the real feed uses underscore-separated enum strings (e.g. `VORDERRADANSCHLUSS_SICHERUNGSBUEGEL`, `KEINE_ANGABEN`, `AUTOMATISCHES_PARKSYSTEM`); both spellings are accepted.
 
 
 ## Ueberwachung
@@ -92,10 +94,11 @@ Attributes which are set statically by the converter:
 
 ## OrganizationType
 
-| Key      |
-|----------|
-| GEMEINDE |
-| KREIS    |
+| Key       |
+|-----------|
+| GEMEINDE  |
+| KREIS     |
+| BUNDESLAND |
 
 
 ## Status
@@ -106,6 +109,8 @@ Attributes which are set statically by the converter:
 | KEINE ANGABEN  | imported (treated as active) |
 | GEPLANT        | skipped                      |
 | AUSSER BETRIEB | skipped                      |
+
+Note: the real feed uses `AUSSER_BETRIEB` (underscore); both spellings are accepted.
 
 
 ## ParkingSiteRestriction

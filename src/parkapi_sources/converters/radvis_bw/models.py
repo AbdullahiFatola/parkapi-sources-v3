@@ -29,6 +29,7 @@ from parkapi_sources.validators import EmptystringNoneable, ReplacingStringValid
 class OrganizationType(Enum):
     GEMEINDE = 'GEMEINDE'
     KREIS = 'KREIS'
+    BUNDESLAND = 'BUNDESLAND'
 
 
 class RadvisSupervisionType(Enum):
@@ -66,6 +67,8 @@ class LocationType(Enum):
 
 class RadvisParkingSiteType(Enum):
     KEINE_ANGABEN = 'KEINE ANGABEN'
+    # The real feed uses underscore-separated values; space variants kept for compatibility
+    KEINE_ANGABEN_UNDERSCORED = 'KEINE_ANGABEN'
     VORDERRADANSCHLUSS = 'VORDERRADANSCHLUSS'
     ANLEHNBUEGEL = 'ANLEHNBUEGEL'
     FAHRRADBOX = 'FAHRRADBOX'
@@ -73,8 +76,11 @@ class RadvisParkingSiteType(Enum):
     SAMMELANLAGE = 'SAMMELANLAGE'
     FAHRRADPARKHAUS = 'FAHRRADPARKHAUS'
     AUTOMATISCHES_PARKSYSTEM = 'AUTOMATISCHES PARKSYSTEM'
+    AUTOMATISCHES_PARKSYSTEM_UNDERSCORED = 'AUTOMATISCHES_PARKSYSTEM'
     SCHLIESSFACH = 'SCHLIESSFACH'
     ABSTELLFLAECHE = 'ABSTELLFLAECHE'
+    # Real feed value; the 'MIT SICHERHEITSBUEGEL' variant below is kept for compatibility
+    VORDERRADANSCHLUSS_SICHERUNGSBUEGEL = 'VORDERRADANSCHLUSS_SICHERUNGSBUEGEL'
     VORDERRADANSCHLUSS_MIT_SICHERHEITSBUEGEL = 'VORDERRADANSCHLUSS MIT SICHERHEITSBUEGEL'
     SONSTIGE = 'SONSTIGE'
 
@@ -83,25 +89,35 @@ class RadvisParkingSiteType(Enum):
             self.ANLEHNBUEGEL: ParkingSiteType.STANDS,
             self.FAHRRADBOX: ParkingSiteType.LOCKERS,
             self.VORDERRADANSCHLUSS: ParkingSiteType.WALL_LOOPS,
+            self.VORDERRADANSCHLUSS_SICHERUNGSBUEGEL: ParkingSiteType.SAFE_WALL_LOOPS,
             self.VORDERRADANSCHLUSS_MIT_SICHERHEITSBUEGEL: ParkingSiteType.SAFE_WALL_LOOPS,
             self.DOPPELSTOECKIG: ParkingSiteType.TWO_TIER,
             self.FAHRRADPARKHAUS: ParkingSiteType.BUILDING,
             self.SAMMELANLAGE: ParkingSiteType.SHED,
             self.SCHLIESSFACH: ParkingSiteType.LOCKBOX,
             self.KEINE_ANGABEN: ParkingSiteType.OTHER,
+            self.KEINE_ANGABEN_UNDERSCORED: ParkingSiteType.OTHER,
             self.AUTOMATISCHES_PARKSYSTEM: ParkingSiteType.OTHER,
+            self.AUTOMATISCHES_PARKSYSTEM_UNDERSCORED: ParkingSiteType.OTHER,
             self.ABSTELLFLAECHE: ParkingSiteType.OTHER,
         }.get(self, ParkingSiteType.OTHER)
 
 
 class StatusType(Enum):
     KEINE_ANGABEN = 'KEINE ANGABEN'
+    # The real feed uses underscore-separated values; space variants kept for compatibility
+    KEINE_ANGABEN_UNDERSCORED = 'KEINE_ANGABEN'
     GEPLANT = 'GEPLANT'
     AKTIV = 'AKTIV'
     AUSSER_BETRIEB = 'AUSSER BETRIEB'
+    AUSSER_BETRIEB_UNDERSCORED = 'AUSSER_BETRIEB'
 
     def is_importable(self) -> bool:
-        return self in [StatusType.AKTIV, StatusType.KEINE_ANGABEN]
+        return self in [
+            StatusType.AKTIV,
+            StatusType.KEINE_ANGABEN,
+            StatusType.KEINE_ANGABEN_UNDERSCORED,
+        ]
 
 
 @validataclass
@@ -156,9 +172,9 @@ class RadvisFeaturePropertiesInput:
 
         has_fee: Optional[bool] = None
         if (
-            self.gebuehren_pro_tag is not None
-            or self.gebuehren_pro_monat is not None
-            or self.gebuehren_pro_jahr is not None
+            self.gebuehren_pro_tag
+            or self.gebuehren_pro_monat
+            or self.gebuehren_pro_jahr
             or self.beschreibung_gebuehren is not None
         ):
             has_fee = True

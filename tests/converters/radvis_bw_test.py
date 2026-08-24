@@ -44,7 +44,7 @@ class RadvisBwConverterTest:
         )
         static_parking_site_inputs, import_parking_site_exceptions = radvis_bw_pull_converter.get_static_parking_sites()
 
-        assert len(static_parking_site_inputs) == 4
+        assert len(static_parking_site_inputs) == 5
         assert len(import_parking_site_exceptions) == 0
 
         validate_static_parking_site_inputs(static_parking_site_inputs)

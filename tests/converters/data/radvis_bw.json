@@ -234,6 +234,82 @@
         "status": "AUSSER BETRIEB",
         "zuletzt_bearbeitet_am": "2026-07-22T01:02:36Z"
       }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.160723864",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          489932.7523289,
+          5382732.30927104
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 160723864,
+        "name": "Schießmauer 1",
+        "betreiber": "Stadt Herrenberg - Munigrid: Fahrrad-Abstellanlagen",
+        "externe_id": "1001",
+        "quell_system": "MOBIDATABW",
+        "zustaendig": "",
+        "zustaendig_orga_typ": "",
+        "kapazitaet": 8,
+        "anzahl_lademoeglichkeiten": 0,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "UNBEKANNT",
+        "abstellanlagen_ort": "UNBEKANNT",
+        "groessenklasse": null,
+        "stellplatzart": "VORDERRADANSCHLUSS_SICHERUNGSBUEGEL",
+        "ueberdacht": true,
+        "gebuehren_pro_tag": null,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": null,
+        "weitere_information": null,
+        "photo_url": null,
+        "status": "AKTIV",
+        "zuletzt_bearbeitet_am": "2026-06-17T14:11:46Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "abstellanlage.160084219",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          557846.47500454,
+          5405692.68894309
+        ]
+      },
+      "geometry_name": "geometrie",
+      "properties": {
+        "id": 160084219,
+        "name": null,
+        "betreiber": "Schwäbisch Gmünd",
+        "externe_id": "51",
+        "quell_system": "RADVIS",
+        "zustaendig": "Schwäbisch Gmünd",
+        "zustaendig_orga_typ": "GEMEINDE",
+        "kapazitaet": 16,
+        "anzahl_lademoeglichkeiten": null,
+        "kapazitaet_lastenraeder": null,
+        "ueberwacht": "KEINE",
+        "abstellanlagen_ort": "STRASSENRAUM",
+        "groessenklasse": null,
+        "stellplatzart": "ANLEHNBUEGEL",
+        "ueberdacht": false,
+        "gebuehren_pro_tag": 0,
+        "gebuehren_pro_monat": null,
+        "gebuehren_pro_jahr": null,
+        "beschreibung_gebuehren": null,
+        "beschreibung": null,
+        "weitere_information": null,
+        "photo_url": null,
+        "status": "AUSSER_BETRIEB",
+        "zuletzt_bearbeitet_am": "2026-08-18T10:49:51.594Z"
+      }
     }
   ]
 }
