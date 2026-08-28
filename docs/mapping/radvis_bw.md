@@ -1,0 +1,145 @@
+# RadVIS BW Bike Parking
+
+The state of Baden-Württemberg publishes a GeoJSON dataset with locations of bicycle parking installations (`Abstellanlagen`) across the country, delivered via the MobiDataBW data exchange (`"quell_system": "MOBIDATABW"`). Each feature describes a group of bicycle stands or racks available for public use.
+
+The geometry coordinates are in a projected CRS (UTM zone 32N, WGS84 ellipsoid, EPSG:25832). The converter reprojects them to WGS84 lat/lon using `pyproj` before creating the `ParkingSite`.
+
+Parking installations with `"status": "GEPLANT"` (planned, not yet built) or `"status": "AUSSER BETRIEB"` (decommissioned) should not be integrated. Parking sites with `"quell_system": "MOBIDATABW"` (source system) should not be integrated either — RadVIS contains duplicated data from the MobiDataBW data exchange, which is already covered by the MobiDataBW import. Sources configured in `PARK_API_RADVIS_IGNORE_SOURCES` are skipped as well (RadVIS contains duplicated data from other systems).
+
+
+## `ParkingSite` Properties
+
+Static values:
+
+Each bicycle parking installation is mapped to a static `ParkingSite` as follows.
+
+Attributes which are set statically by the converter:
+
+* `has_realtime_data` is always set to `false`
+* `purpose` is always set to `BIKE`, except for `stellplatzart` `SCHLIESSFACH` which is mapped to `ITEM` (see [Stellplatzart](#Stellplatzart))
+* `lat` and `lon` are computed from the GeoJSON point geometry, reprojected from UTM zone 32N (EPSG:25832) to WGS84
+* `uid` is derived from the numeric feature id
+
+| Field                          | Type                              | Cardinality | Mapping                                           | Comment                                                                      |
+|--------------------------------|-----------------------------------|-------------|---------------------------------------------------|------------------------------------------------------------------------------|
+| id                             | integer                           | 1           | uid                                               |                                                                              |
+| name                           | string                            | ?           | name                                              | Fallback `Abstellanlage` if blank                                            |
+| betreiber                      | string                            | ?           | operator_name                                     | Omit if blank                                                                |
+| externe_id                     | string                            | ?           | —                                                 | External id from the source system, not mapped                               |
+| quell_system                   | string                            | 1           | —                                                 | `MOBIDATABW` and sources in `PARK_API_RADVIS_IGNORE_SOURCES` are skipped (duplicates of other imports) |
+| zustaendig                     | string                            | ?           | —                                                 | Responsible body, not mapped (empty string treated as unset)                 |
+| zustaendig_orga_typ            | [OrganizationType](#OrganizationType) | ?        | —                                                 | Not mapped (empty string treated as unset)                                   || kapazitaet                     | integer                           | 1           | capacity                                          |                                                                              |
+| anzahl_lademoeglichkeiten      | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CHARGING` restriction if > 0                                         |
+| kapazitaet_lastenraeder        | integer                           | ?           | [restrictions](#ParkingSiteRestriction)           | Map to `CARGOBIKE` restriction if > 0                                        |
+| ueberwacht                     | [Ueberwachung](#Ueberwachung)    | 1           | supervision_type                                  | See [Ueberwachung](#Ueberwachung)                                            |
+| abstellanlagen_ort             | [AbstellanlagenOrt](#AbstellanlagenOrt) | 1      | related_location, park_and_ride_type             | See [AbstellanlagenOrt](#AbstellanlagenOrt); `BIKE_AND_RIDE` additionally sets `park_and_ride_type = [YES]` |
+| groessenklasse                 | string                            | ?           | —                                                 | Size class (e.g. `BASISANGEBOT_XS`), ignored                                 |
+| stellplatzart                  | [Stellplatzart](#Stellplatzart)  | 1           | type, purpose                                     | See [Stellplatzart](#Stellplatzart); `SCHLIESSFACH` maps to `purpose.ITEM` |
+| ueberdacht                     | boolean                           | 1           | is_covered                                        |                                                                              |
+| gebuehren_pro_tag              | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
+| gebuehren_pro_monat            | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
+| gebuehren_pro_jahr             | integer                           | ?           | has_fee                                           | `has_fee` set to `true` if not "" or null                                  |
+| beschreibung_gebuehren         | string                            | ?           | fee_description                                   |                                                                              |
+| beschreibung                   | string                            | ?           | description                                       | Combined with `weitere_information` (see below)                              |
+| weitere_information            | string                            | ?           | description                                       | Appended to `beschreibung`, separated by a space                             |
+| photo_url                      | string                            | ?           | photo_url                                         |                                                                              |
+| url                            | string                            | ?           | public_url                                        | Booking/info URL from the source system (e.g. online booking)               |
+| status                         | [Status](#Status)                | 1           | —                                                 | `AKTIV` and `KEINE ANGABEN` are imported, `GEPLANT` and `AUSSER BETRIEB` skipped |
+| zuletzt_bearbeitet_am          | datetime                          | 1           | static_data_updated_at                            | ISO 8601 timestamp in UTC (e.g. `2026-07-22T01:02:36Z`)                      |
+| park_and_ride_type (derived)   | array                             | ?           | park_and_ride_type                                | `[YES]` if `abstellanlagen_ort` is `BIKE_AND_RIDE`, otherwise unset (519 of 4314 sites in the current feed) |
+
+
+## Stellplatzart
+
+| Key                                       | Mapping              |
+|-------------------------------------------|----------------------|
+| ANLEHNBUEGEL                              | `STANDS`             |
+| FAHRRADBOX                                | `LOCKERS`            |
+| VORDERRADANSCHLUSS                        | `WALL_LOOPS`         |
+| VORDERRADANSCHLUSS_SICHERUNGSBUEGEL       | `SAFE_WALL_LOOPS`    |
+| VORDERRADANSCHLUSS MIT SICHERHEITSBUEGEL  | `SAFE_WALL_LOOPS`    |
+| DOPPELSTOECKIG                            | `TWO_TIER`           |
+| FAHRRADPARKHAUS                           | `BUILDING`           |
+| SAMMELANLAGE                              | `SHED`               |
+| SCHLIESSFACH                              | `LOCKBOX`            |
+| KEINE ANGABEN                             | `OTHER`              |
+| AUTOMATISCHES PARKSYSTEM                  | `OTHER`              |
+| ABSTELLFLAECHE                            | `OTHER`              |
+| SONSTIGE                                  | `OTHER`              |
+
+Note: the real feed uses underscore-separated enum strings (e.g. `VORDERRADANSCHLUSS_SICHERUNGSBUEGEL`, `KEINE_ANGABEN`, `AUTOMATISCHES_PARKSYSTEM`); both spellings are accepted.
+
+`SCHLIESSFACH` additionally maps to `purpose.ITEM`; all other types map to `purpose.BIKE`.
+
+
+## Ueberwachung
+
+| Key              | Mapping     |
+|------------------|-------------|
+| KEINE            | `NO`        |
+| UNBEKANNT        | *(not set)* |
+| VIDEO            | `VIDEO`     |
+| VOR-ORT-PERSONAL | `ATTENDED`  |
+
+
+## AbstellanlagenOrt
+
+| Key                      | Mapping                    |
+|--------------------------|----------------------------|
+| OEFFENTLICHE_EINRICHTUNG | `Öffentliche Einrichtung`  |
+| BIKE_AND_RIDE            | `Bike and Ride`            |
+| SCHULE                   | `Schule`                   |
+| STRASSENRAUM             | `Straßenraum`              |
+| BILDUNGSEINRICHTUNG      | `Bildungseinrichtung`      |
+| UNBEKANNT                | *(not set)*                |
+| SONSTIGES                | *(not set)*                |
+
+
+## OrganizationType
+
+| Key       |
+|-----------|
+| GEMEINDE  |
+| KREIS     |
+| BUNDESLAND |
+
+
+## Status
+
+| Key            | Mapping                      |
+|----------------|------------------------------|
+| AKTIV          | imported                     |
+| KEINE ANGABEN  | imported (treated as active) |
+| GEPLANT        | skipped                      |
+| AUSSER BETRIEB | skipped                      |
+
+Note: the real feed uses `AUSSER_BETRIEB` (underscore); both spellings are accepted.
+
+
+## ParkingSiteRestriction
+
+| Key                        | Mapping                          |
+|----------------------------|----------------------------------|
+| anzahl_lademoeglichkeiten  | `ParkingAudience.CHARGING`       |
+| kapazitaet_lastenraeder    | `ParkingAudience.CARGOBIKE`      |
+
+Restrictions are only added when the corresponding count is greater than `0`. The count is used as the restriction `capacity`.
+
+
+## Description
+
+`description` is built from `beschreibung` and `weitere_information`:
+
+* both set: `"{beschreibung} {weitere_information}"`
+* only one set: that value
+* neither set: `description` stays unset
+
+
+## Notes on the current feed (4314-feature sample, 2026-08-24)
+
+* `quell_system`: `MOBIDATABW` 3413 / `RADVIS` 901. With the `MOBIDATABW` skip and the status filter, **895 sites** are imported.
+* `url` is **not present** in the live feed (only `photo_url` is) — `public_url` stays unset for all real features.
+* `kapazitaet_lastenraeder` is always `null` in the current feed — the `CARGOBIKE` restriction is schema support only and never fires today.
+* `externe_id` (3907 sites) is not mappable: `external_identifiers` only supports the types `OSM` and `DHID`, and RadVIS ids are municipal identifiers.
+* `zustaendig` / `zustaendig_orga_typ` (537 sites) are not mappable: ParkAPI has no "responsible body" field, and `operator_name` is already covered by `betreiber`.
+* `groessenklasse` (4 sites) is not mappable; only `tags` (free-form) could carry it, which is not worth it for 4 sites.
